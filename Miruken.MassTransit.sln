@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2000
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miruken.MassTransit.Api", "Source\Miruken.MassTransit.Api\Miruken.MassTransit.Api.csproj", "{C78DFD65-C146-43FB-9AB2-6993594D8639}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miruken.MassTransit", "Source\Miruken.MassTransit\Miruken.MassTransit.csproj", "{EF5A1AA3-66FB-499A-952B-852BFE774D41}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{96978E2E-7DBE-4FCE-AED3-B9DA34FCD031}"
+	ProjectSection(SolutionItems) = preProject
+		Source\GlobalAssemblyInfo.cs = Source\GlobalAssemblyInfo.cs
+		NuGet.Config = NuGet.Config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{232DC82E-DD44-4668-BB08-1FD5D5E99A17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "Test\UnitTests\UnitTests.csproj", "{6902721B-F13B-4851-9827-F5B66684D009}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C78DFD65-C146-43FB-9AB2-6993594D8639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C78DFD65-C146-43FB-9AB2-6993594D8639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C78DFD65-C146-43FB-9AB2-6993594D8639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C78DFD65-C146-43FB-9AB2-6993594D8639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF5A1AA3-66FB-499A-952B-852BFE774D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF5A1AA3-66FB-499A-952B-852BFE774D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF5A1AA3-66FB-499A-952B-852BFE774D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF5A1AA3-66FB-499A-952B-852BFE774D41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6902721B-F13B-4851-9827-F5B66684D009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6902721B-F13B-4851-9827-F5B66684D009}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6902721B-F13B-4851-9827-F5B66684D009}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6902721B-F13B-4851-9827-F5B66684D009}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6902721B-F13B-4851-9827-F5B66684D009} = {232DC82E-DD44-4668-BB08-1FD5D5E99A17}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3B619D05-9373-48B6-97FB-105057B1FBB3}
+	EndGlobalSection
+EndGlobal
