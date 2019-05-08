@@ -1,0 +1,22 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Miruken.MassTransit.Api</id>
+    <version>$version$</version>
+    <title>Miruken MassTransit Api</title>
+    <authors>provenstyle cneuwirt</authors>
+    <owners>provenstyle cneuwirt</owners>
+    <licenseUrl>https://github.com/Miruken-DotNet/Miruken.MassTransit/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Miruken-DotNet/Miruken.MassTransit</projectUrl>
+    <iconUrl>https://avatars0.githubusercontent.com/u/20844317</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Client Api for MassTransit integration with Miruken.</description>
+    <copyright>Copyright 2019</copyright>
+    <tags>Miruken MassTransit</tags>
+    <dependencies>
+      <dependency id="Miruken"             version="2.0"/>
+      <dependency id="Miruken.Mediate"     version="3.0"/>
+      <dependency id="Miruken.Mediate.Api" version="3.0"/>
+    </dependencies>
+  </metadata>
+</package>
