@@ -3,13 +3,12 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using IntegrationTests.Domain;
 using MassTransit;
+using MassTransit.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Miruken.Callback;
 using Miruken.Castle;
 using Miruken.MassTransit;
 using Miruken.MassTransit.Api;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace IntegrationTests
 {
@@ -87,45 +86,7 @@ namespace IntegrationTests
             });
 
             bus = container.Kernel.Resolve<IBusControl>();
-            bus.Start();
-        }
-    }
-
-    public class MirukenJsonConverter: JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            new JsonSerializer
-                {
-                    NullValueHandling              = NullValueHandling.Ignore,
-                    TypeNameHandling               = TypeNameHandling.Auto,
-                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                    ContractResolver               = new CamelCasePropertyNamesContractResolver()
-                }
-                .Serialize(writer, value);
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            return new JsonSerializer
-                {
-                    NullValueHandling              = NullValueHandling.Ignore,
-                    TypeNameHandling               = TypeNameHandling.Auto,
-                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                    ContractResolver               = new CamelCasePropertyNamesContractResolver()
-                }.Deserialize(reader, objectType);
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-            return !IsMassTransitOrSystemType(objectType);
-        }
-
-        private static bool IsMassTransitOrSystemType(Type objectType)
-        {
-            return objectType.Assembly == typeof(MassTransit.IConsumer).Assembly ||
-                   objectType.Assembly.IsDynamic ||
-                   objectType.Assembly == typeof(object).Assembly;
+            TaskUtil.Await(() => bus.StartAsync());
         }
     }
 }
