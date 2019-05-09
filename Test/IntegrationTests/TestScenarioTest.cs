@@ -16,7 +16,7 @@ namespace IntegrationTests
             var handlerCounter         = DoSomethingHandler.Counter;
             var anotherHandlerCounter  = AnotherDoSomethingHandler.Counter;
 
-            handler.Send(new DoSomething());
+            appContext.Send(new DoSomething());
             Assert.IsTrue(
                 DoSomethingHandler.Counter        > handlerCounter ||
                 AnotherDoSomethingHandler.Counter > anotherHandlerCounter

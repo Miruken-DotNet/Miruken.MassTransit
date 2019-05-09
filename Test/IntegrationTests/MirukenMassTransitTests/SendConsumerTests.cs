@@ -17,7 +17,7 @@ namespace IntegrationTests.MirukenMassTransitTests
             var anotherHandlerCounter  = AnotherDoSomethingHandler.Counter;
 
             var uri = queueUri.ToString();
-            await handler.Send(new DoSomething()
+            await appContext.Send(new DoSomething()
                 .RouteTo(uri));
 
             await Task.Delay(TimeSpan.FromMilliseconds(500));
@@ -34,7 +34,7 @@ namespace IntegrationTests.MirukenMassTransitTests
             var handlerCounter = GiveMeSomethingHandler.Counter;
 
             var uri = queueUri.ToString();
-            var result = await handler.Send(new GiveMeSomething { Message = message }
+            var result = await appContext.Send(new GiveMeSomething { Message = message }
                 .RouteTo(uri));
 
             await Task.Delay(TimeSpan.FromMilliseconds(500));

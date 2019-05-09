@@ -7,6 +7,7 @@ using MassTransit.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Miruken.Callback;
 using Miruken.Castle;
+using Miruken.Context;
 using Miruken.MassTransit;
 using Miruken.MassTransit.Api;
 
@@ -15,7 +16,7 @@ namespace IntegrationTests
     public abstract class TestScenario
     {
         protected IWindsorContainer container;
-        protected IHandler          handler;
+        protected Context           appContext;
         protected IBusControl       bus;
         protected Uri               queueUri;
 
@@ -23,14 +24,17 @@ namespace IntegrationTests
         public virtual void TestCleanup()
         {
             bus.Stop();
+            appContext.End();
         }
 
         [TestInitialize]
         public virtual void TestInitialize()
         {
+            appContext = new Context();
+
             container = new WindsorContainer();
             container.Kernel.AddHandlersFilter(new ContravariantFilter());
-            handler = new WindsorHandler(container).Infer();
+            appContext.AddHandlers(new WindsorHandler(container).Infer());
             container.Install(
                 new FeaturesInstaller(
                     new HandleFeature().AddFilters(
@@ -42,7 +46,7 @@ namespace IntegrationTests
                 )
             );
             container.Register(
-                Component.For<IHandler>().Instance(handler),
+                Component.For<IHandler>().Instance(appContext),
                 Classes.FromThisAssembly().BasedOn(typeof(IConsumer<>)),
                 Classes.FromAssemblyContaining<SendConsumer>().BasedOn(typeof(IConsumer<>))
             );
