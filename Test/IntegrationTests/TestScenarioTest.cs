@@ -27,7 +27,7 @@ namespace IntegrationTests
         public async Task MassTransitCanConsume_QueueThis()
         {
             var counter  = QueueThisConsumer.Counter;
-            var endpoint = await bus.GetSendEndpoint(queueUri);
+            var endpoint = await clientBus.GetSendEndpoint(queueUri);
             await endpoint.Send(new QueueThis());
 
             //Wonder what a better way might be to wait for the
@@ -39,10 +39,10 @@ namespace IntegrationTests
         [TestMethod]
         public async Task MassTransitCanConsume_Send()
         {
-            var handlerCounter                = DoSomethingHandler.Counter;
-            var anotherHandlerCounter  = AnotherDoSomethingHandler.Counter;
+            var handlerCounter        = DoSomethingHandler.Counter;
+            var anotherHandlerCounter = AnotherDoSomethingHandler.Counter;
 
-            var endpoint = await bus.GetSendEndpoint(queueUri);
+            var endpoint = await clientBus.GetSendEndpoint(queueUri);
             await endpoint.Send(new Send(new DoSomething{ message = "go do something"}));
 
             //Wonder what a better way might be to wait for the

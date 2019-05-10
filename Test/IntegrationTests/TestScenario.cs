@@ -15,15 +15,18 @@ namespace IntegrationTests
 {
     public abstract class TestScenario
     {
+        private IBusControl         bus;
+
         protected IWindsorContainer container;
         protected Context           appContext;
-        protected IBusControl       bus;
         protected Uri               queueUri;
+        protected IBusControl       clientBus;
 
         [TestCleanup]
         public virtual void TestCleanup()
         {
             bus.Stop();
+            clientBus.Stop();
             appContext.End();
         }
 
@@ -51,12 +54,13 @@ namespace IntegrationTests
                 Classes.FromAssemblyContaining<SendConsumer>().BasedOn(typeof(IConsumer<>))
             );
 
-            //configure MassTransit
+            var rabbitUri = new Uri("rabbitmq://localhost");
+            var queueName = "miruken_masstransit_integration_tests";
+            queueUri      = new Uri($"{rabbitUri}{queueName}");
+
+            //configure MassTransit consumer
             container.AddMassTransit(c =>
             {
-                var rabbitUri = new Uri("rabbitmq://localhost");
-                var queueName = "miruken_masstransit_integration_tests";
-                queueUri      = new Uri($"{rabbitUri}{queueName}");
 
                 c.AddBus(context => Bus.Factory.CreateUsingRabbitMq(cfg =>
                 {
@@ -91,6 +95,29 @@ namespace IntegrationTests
 
             bus = container.Kernel.Resolve<IBusControl>();
             TaskUtil.Await(() => bus.StartAsync());
+
+            //Create client bus
+            clientBus = Bus.Factory.CreateUsingRabbitMq(cfg =>
+            {
+                cfg.Host(rabbitUri, h =>
+                {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
+                cfg.ConfigureJsonSerializer(x =>
+                {
+                    x.Converters.Insert(0, new MirukenJsonConverter());
+                    return x;
+                });
+
+                cfg.ConfigureJsonDeserializer(x =>
+                {
+                    x.Converters.Insert(0, new MirukenJsonConverter());
+                    return x;
+                });
+            });
+
+            TaskUtil.Await(() => clientBus.StartAsync());
         }
     }
 }
