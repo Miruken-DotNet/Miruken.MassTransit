@@ -24,17 +24,9 @@ namespace Miruken.MassTransit.Api
             var uri = new Uri(routed.Route);
             if (routed.Message.GetType().IsClassOf(typeof(IRequest<>)))
             {
-                try
-                {
-                    var client = _bus.CreateRequestClient<Request, Response>(uri, TimeSpan.FromSeconds(30));
-                    var result = await client.Request(new Request(routed.Message));
-                    return result.Payload;
-                }
-                catch (Exception e)
-                {
-                    var a = 1;
-                    throw;
-                }
+                var client = _bus.CreateRequestClient<Request, Response>(uri, TimeSpan.FromSeconds(30));
+                var result = await client.Request(new Request(routed.Message));
+                return result.Payload;
             }
 
             if (command.Many)
