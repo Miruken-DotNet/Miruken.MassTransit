@@ -19,8 +19,9 @@ namespace IntegrationTests
 
         protected IWindsorContainer container;
         protected Context           appContext;
-        protected Uri               queueUri;
         protected IBusControl       clientBus;
+        protected Uri               queueUri;
+        protected string            routeString;
 
         [TestCleanup]
         public virtual void TestCleanup()
@@ -57,6 +58,7 @@ namespace IntegrationTests
             var rabbitUri = new Uri("rabbitmq://localhost");
             var queueName = "miruken_masstransit_integration_tests";
             queueUri      = new Uri($"{rabbitUri}{queueName}");
+            routeString   = $"mt:{queueUri}";
 
             //configure MassTransit consumer
             container.AddMassTransit(c =>

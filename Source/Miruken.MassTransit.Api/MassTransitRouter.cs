@@ -8,7 +8,7 @@ using Miruken.Mediate.Route;
 
 namespace Miruken.MassTransit.Api
 {
-    [Routes("rabbitmq")]
+    [Routes("mt")]
     public class MassTransitRouter : Handler
     {
         private readonly IBus _bus;
@@ -21,12 +21,21 @@ namespace Miruken.MassTransit.Api
         [Handles]
         public async Task<object> Route(Routed routed, Command command, IHandler composer)
         {
-            var uri = new Uri(routed.Route);
+            Uri endpointUri;
+            try
+            {
+                var uri     = new Uri(routed.Route);
+                endpointUri = new Uri(uri.PathAndQuery);
+            } catch (UriFormatException)
+            {
+                return null;
+            }
+
             if (routed.Message.GetType().IsClassOf(typeof(IRequest<>)))
             {
-                var client = _bus.CreateRequestClient<Request, Response>(uri, TimeSpan.FromSeconds(30));
+                var client = _bus.CreateRequestClient<Request, Response>(endpointUri, TimeSpan.FromSeconds(30));
                 var result = await client.Request(new Request(routed.Message));
-                return result.Payload;
+                return EnsureSuccessfulResult(result);
             }
 
             if (command.Many)
@@ -35,7 +44,7 @@ namespace Miruken.MassTransit.Api
                 return null;
             }
 
-            var endpoint = await _bus.GetSendEndpoint(uri);
+            var endpoint = await _bus.GetSendEndpoint(endpointUri);
             await endpoint.Send(new Send(routed.Message));
             return null;
         }

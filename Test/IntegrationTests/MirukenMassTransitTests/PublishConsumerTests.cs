@@ -16,9 +16,8 @@ namespace IntegrationTests.MirukenMassTransitTests
             var handlerCounter         = DoSomethingHandler.Counter;
             var anotherHandlerCounter  = AnotherDoSomethingHandler.Counter;
 
-            var uri = queueUri.ToString();
             await appContext.Publish(new DoSomething()
-                .RouteTo(uri));
+                .RouteTo(routeString));
 
             await Task.Delay(TimeSpan.FromMilliseconds(500));
             Assert.IsTrue(DoSomethingHandler.Counter > handlerCounter);

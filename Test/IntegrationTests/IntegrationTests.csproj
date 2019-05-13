@@ -123,6 +123,9 @@
     <Compile Include="Domain\QueueThis.cs" />
     <Compile Include="Domain\DoSomethingHandler.cs" />
     <Compile Include="Domain\QueueThisConsumer.cs" />
+    <Compile Include="Domain\TestException.cs" />
+    <Compile Include="Domain\ThrowExceptionRequest.cs" />
+    <Compile Include="Domain\ThrowExceptionRequestHandler.cs" />
     <Compile Include="MirukenMassTransitTests\PublishConsumerTests.cs" />
     <Compile Include="MirukenMassTransitTests\SendConsumerTests.cs" />
     <Compile Include="TestScenario.cs" />

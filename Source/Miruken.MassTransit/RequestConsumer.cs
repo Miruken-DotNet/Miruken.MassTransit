@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MassTransit;
 using Miruken.Callback;
 using Miruken.MassTransit.Api;
@@ -17,8 +18,15 @@ namespace Miruken.MassTransit
 
         public async Task Consume(ConsumeContext<Request> context)
         {
-            var result = await _handler.Send(context.Message.Payload);
-            await context.RespondAsync(new Response(result));
+            try
+            {
+                var result = await _handler.Send(context.Message.Payload);
+                await context.RespondAsync(new Response(result));
+            }
+            catch (Exception e)
+            {
+                await context.RespondAsync(new Response(e));
+            }
         }
     }
 }

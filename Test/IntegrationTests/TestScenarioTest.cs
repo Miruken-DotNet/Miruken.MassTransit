@@ -53,5 +53,11 @@ namespace IntegrationTests
                 AnotherDoSomethingHandler.Counter > anotherHandlerCounter
             );
         }
+
+        [TestMethod, ExpectedException(typeof(UriFormatException))]
+        public void ValidUris()
+        {
+            new Uri("mt");
+        }
     }
 }
