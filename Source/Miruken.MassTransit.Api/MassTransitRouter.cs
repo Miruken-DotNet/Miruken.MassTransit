@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
-using MassTransit;
-using Miruken.Callback;
-using Miruken.Infrastructure;
-using Miruken.Mediate.Api;
-using Miruken.Mediate.Route;
-
-namespace Miruken.MassTransit.Api
+﻿namespace Miruken.MassTransit.Api
 {
+    using System;
+    using System.Threading.Tasks;
+    using Callback;
+    using global::MassTransit;
+    using Infrastructure;
+    using Miruken.Api;
+    using Miruken.Api.Route;
+
     [Routes("mt")]
     public class MassTransitRouter : Handler
     {

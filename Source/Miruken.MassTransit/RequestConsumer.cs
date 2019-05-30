@@ -1,13 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using MassTransit;
-using Miruken.Callback;
-using Miruken.MassTransit.Api;
-using Miruken.Mediate;
-
-namespace Miruken.MassTransit
+﻿namespace Miruken.MassTransit
 {
-    public class RequestConsumer : IConsumer<Request>
+    using System;
+    using System.Threading.Tasks;
+    using Callback;
+    using global::MassTransit;
+    using Miruken.Api;
+
+    public class RequestConsumer : IConsumer<Api.Request>
     {
         private readonly IHandler _handler;
 
@@ -16,16 +15,16 @@ namespace Miruken.MassTransit
             _handler = handler;
         }
 
-        public async Task Consume(ConsumeContext<Request> context)
+        public async Task Consume(ConsumeContext<Api.Request> context)
         {
             try
             {
                 var result = await _handler.Send(context.Message.Payload);
-                await context.RespondAsync(new Response(result));
+                await context.RespondAsync(new Api.Response(result));
             }
             catch (Exception e)
             {
-                await context.RespondAsync(new Response(e));
+                await context.RespondAsync(new Api.Response(e));
             }
         }
     }

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using IntegrationTests.Domain;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Miruken.MassTransit.Api;
-using Miruken.Mediate;
-
-namespace IntegrationTests
+﻿namespace IntegrationTests
 {
+    using System;
+    using System.Threading.Tasks;
+    using Domain;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Miruken.Api;
+    using Miruken.MassTransit.Api;
+
     [TestClass]
     public class TestScenarioTest : TestScenario
     {

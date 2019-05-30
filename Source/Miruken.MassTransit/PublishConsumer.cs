@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
-using MassTransit;
-using Miruken.Callback;
-using Miruken.MassTransit.Api;
-using Miruken.Mediate;
-
-namespace Miruken.MassTransit
+﻿namespace Miruken.MassTransit
 {
+    using System.Threading.Tasks;
+    using Api;
+    using Callback;
+    using global::MassTransit;
+    using Miruken.Api;
+
     public class PublishConsumer : IConsumer<Publish>
     {
         private readonly IHandler _handler;

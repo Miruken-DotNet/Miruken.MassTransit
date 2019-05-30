@@ -1,7 +1,7 @@
-﻿using Miruken.Mediate.Api;
-
-namespace Miruken.MassTransit.Api
+﻿namespace Miruken.MassTransit.Api
 {
+    using Miruken.Api;
+
     public class Request : IRequest<Response>
     {
         public Request()
