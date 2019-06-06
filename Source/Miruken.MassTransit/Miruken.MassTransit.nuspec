@@ -15,8 +15,6 @@
     <tags>Miruken MassTransit</tags>
     <dependencies>
       <dependency id="Miruken"                 version="2.1"/>
-      <dependency id="Miruken.Mediate"         version="3.1"/>
-      <dependency id="Miruken.Mediate.Api"     version="3.1"/>
       <dependency id="MassTransit"             version="5.3.2"/>
       <dependency id="Miruken.MassTransit.Api" version="0.0"/>
     </dependencies>
