@@ -36,8 +36,8 @@
     <Reference Include="MassTransit, Version=5.3.2.0, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MassTransit.5.3.2\lib\net452\MassTransit.dll</HintPath>
     </Reference>
-    <Reference Include="Miruken, Version=3.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Miruken.3.0.5\lib\net461\Miruken.dll</HintPath>
+    <Reference Include="Miruken, Version=3.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Miruken.3.0.6\lib\net461\Miruken.dll</HintPath>
     </Reference>
     <Reference Include="NewId, Version=3.0.1.17, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NewId.3.0.1\lib\net452\NewId.dll</HintPath>
