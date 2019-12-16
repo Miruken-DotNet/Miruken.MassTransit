@@ -9,13 +9,13 @@ namespace Miruken.MassTransit.Api
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             new JsonSerializer
-                {
-                    NullValueHandling              = NullValueHandling.Ignore,
-                    TypeNameHandling               = TypeNameHandling.Auto,
-                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                    ContractResolver               = new CamelCasePropertyNamesContractResolver()
-                }
-                .Serialize(writer, value);
+            {
+                NullValueHandling              = NullValueHandling.Ignore,
+                TypeNameHandling               = TypeNameHandling.Auto,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
+                ContractResolver               = new CamelCasePropertyNamesContractResolver()
+            }
+            .Serialize(writer, value);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

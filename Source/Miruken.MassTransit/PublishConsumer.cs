@@ -2,22 +2,14 @@
 {
     using System.Threading.Tasks;
     using Api;
-    using Callback;
     using global::MassTransit;
     using Miruken.Api;
 
-    public class PublishConsumer : IConsumer<Publish>
+    public class PublishConsumer : ContextualConsumer<Publish>
     {
-        private readonly IHandler _handler;
-
-        public PublishConsumer(IHandler handler)
+        public override async Task Consume(ConsumeContext<Publish> context)
         {
-            _handler = handler;
-        }
-
-        public async Task Consume(ConsumeContext<Publish> context)
-        {
-            await _handler.Publish(context.Message.Payload);
+            await Context.Publish(context.Message.Payload);
         }
     }
 }

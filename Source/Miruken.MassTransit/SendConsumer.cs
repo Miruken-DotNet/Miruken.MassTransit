@@ -2,22 +2,14 @@
 {
     using System.Threading.Tasks;
     using Api;
-    using Callback;
     using global::MassTransit;
     using Miruken.Api;
 
-    public class SendConsumer : IConsumer<Send>
+    public class SendConsumer : ContextualConsumer<Send>
     {
-        private readonly IHandler _handler;
-
-        public SendConsumer(IHandler handler)
+        public override async Task Consume(ConsumeContext<Send> context)
         {
-            _handler = handler;
-        }
-
-        public async Task Consume(ConsumeContext<Send> context)
-        {
-            var result = await _handler.Send(context.Message.Payload);
+            await Context.Send(context.Message.Payload);
         }
     }
 }

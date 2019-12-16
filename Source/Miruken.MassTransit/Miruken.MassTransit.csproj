@@ -18,13 +18,13 @@
     <DefineConstants>NETFULL</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
-    <DefineConstants>NETFULL</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="MassTransit" Version="6.0.0" />
-    <PackageReference Include="Miruken" Version="3.99.15-Alpha.25" />
+    <PackageReference Include="Miruken" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(DefineConstants.Contains('NETSTANDARD2_0'))">
+    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
