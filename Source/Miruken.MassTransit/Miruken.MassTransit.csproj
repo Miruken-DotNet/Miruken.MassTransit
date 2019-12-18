@@ -26,6 +26,7 @@
 
   <ItemGroup Condition="$(DefineConstants.Contains('NETSTANDARD2_0'))">
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
