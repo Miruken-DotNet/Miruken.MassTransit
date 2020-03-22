@@ -3,7 +3,23 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <LangVersion>latest</LangVersion>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <FileVersion>0.0.0.0</FileVersion>
+    <Version>0.0.0</Version>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>Miruken.MassTransit</PackageId>
+    <Authors>cneuwirt</Authors>
+    <Product>Miruken MassTransit</Product>
+    <Description>Miruken integration with MassTransit</Description>
+    <Copyright>Copyright 2020</Copyright>
+    <PackageLicenseUrl>https://github.com/Miruken-DotNet/Miruken.MassTransit/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Miruken-DotNet/MassTransit</PackageProjectUrl>
+    <PackageIconUrl>https://avatars0.githubusercontent.com/u/20844317</PackageIconUrl>
+    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+    <Company>Miruken</Company>
+    <PackageTags>Miruken MassTransit</PackageTags>
     <OutputPath>bin\</OutputPath>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
