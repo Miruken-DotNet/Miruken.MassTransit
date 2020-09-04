@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <PackageReference Include="MassTransit" Version="6.2.4" />
-    <PackageReference Include="Miruken" Version="4.1.6-Alpha.5" />
+    <PackageReference Include="Miruken" Version="4.1.6-Alpha.9" />
   </ItemGroup>
 
 </Project>
