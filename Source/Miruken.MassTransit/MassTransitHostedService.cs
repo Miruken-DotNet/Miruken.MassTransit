@@ -1,5 +1,4 @@
-﻿#if NETSTANDARD
-namespace Miruken.MassTransit
+﻿namespace Miruken.MassTransit
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -39,4 +38,4 @@ namespace Miruken.MassTransit
         }
     }
 }
-#endif
+

@@ -33,9 +33,9 @@
 
             if (routed.Message.GetType().IsClassOf(typeof(IRequest<>)))
             {
-                var client = _bus.CreateRequestClient<Request, Response>(endpointUri, TimeSpan.FromSeconds(30));
-                var result = await client.Request(new Request(routed.Message));
-                return EnsureSuccessfulResult(result);
+                var client = _bus.CreateRequestClient<Request>(endpointUri, TimeSpan.FromSeconds(30));
+                var result = await client.GetResponse<Response>(new Request(routed.Message));
+                return EnsureSuccessfulResult(result.Message);
             }
 
             if (command.Many)

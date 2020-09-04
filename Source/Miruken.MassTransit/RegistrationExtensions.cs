@@ -1,27 +1,22 @@
-﻿#if NETSTANDARD
-namespace Miruken.MassTransit
+﻿namespace Miruken.MassTransit
 {
     using System;
     using Api;
     using global::MassTransit;
     using global::MassTransit.ExtensionsDependencyInjectionIntegration;
-    using global::MassTransit.ExtensionsDependencyInjectionIntegration.Registration;
     using Register;
 
     public static class RegistrationExtensions
     {
         public static Registration WithMassTransit(this Registration registration,
-            Action<IServiceCollectionConfigurator> configure = null)
+            Action<IServiceCollectionBusConfigurator> configure = null)
         {
             if (!registration.CanRegister(typeof(RegistrationExtensions)))
                 return registration;
 
-            registration.Services(services =>
-            {
-                var configurator = new ServiceCollectionConfigurator(services);
-                configure?.Invoke(configurator);
-            });
-            
+            if (configure != null)
+                registration.Services(services => services.AddMassTransit(configure));
+
             return registration
                 .Sources(sources => sources.FromAssemblyOf<RequestConsumer>(),
                          sources => sources.FromAssemblyOf<MassTransitRouter>())
@@ -31,4 +26,4 @@ namespace Miruken.MassTransit
         }
     }
 }
-#endif
+

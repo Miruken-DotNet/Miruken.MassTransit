@@ -1,5 +1,4 @@
-﻿#if NETSTANDARD
-namespace IntegrationTests
+﻿namespace IntegrationTests
 {
     using System;
     using System.Threading.Tasks;
@@ -26,4 +25,4 @@ namespace IntegrationTests
         }
     }
 }
-#endif
+

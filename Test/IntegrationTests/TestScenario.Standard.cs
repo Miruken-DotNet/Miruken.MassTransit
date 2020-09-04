@@ -1,5 +1,4 @@
-﻿#if NETSTANDARD
-namespace IntegrationTests
+﻿namespace IntegrationTests
 {
     using System;
     using Domain;
@@ -100,4 +99,4 @@ namespace IntegrationTests
         }
     }
 }
-#endif
+
