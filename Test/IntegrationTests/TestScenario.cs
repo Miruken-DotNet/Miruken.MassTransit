@@ -12,31 +12,31 @@
 
     public abstract class TestScenario
     {
-        private IBusControl   bus;
+        private IBusControl   _bus;
 
-        protected Context     appContext;
-        protected IBusControl clientBus;
-        protected Uri         queueUri;
-        protected string      routeString;
+        protected Context     AppContext;
+        protected IBusControl ClientBus;
+        protected Uri         QueueUri;
+        protected string      RouteString;
 
-        private const string queueName = "miruken_masstransit_integration_tests";
+        private const string QueueName = "miruken_masstransit_integration_tests";
 
         [TestCleanup]
         public virtual void TestCleanup()
         {
-            bus.Stop();
-            clientBus.Stop();
-            appContext.End();
+            _bus.Stop();
+            ClientBus.Stop();
+            AppContext.End();
         }
 
         [TestInitialize]
         public virtual void TestInitialize()
         {
             var rabbitUri = new Uri("rabbitmq://localhost");
-            queueUri      = new Uri($"{rabbitUri}{queueName}");
-            routeString   = $"mt:{queueUri}";
+            QueueUri      = new Uri($"{rabbitUri}{QueueName}");
+            RouteString   = $"mt:{QueueUri}";
 
-            appContext = new ServiceCollection()
+            AppContext = new ServiceCollection()
                 .AddMiruken(configure => configure
                     .PublicSources(s => s.FromAssemblyOf<TestScenario>())
                     .WithMassTransit(mt =>
@@ -50,7 +50,7 @@
 
                              cfg.UseInMemoryOutbox();
 
-                             cfg.ReceiveEndpoint(queueName, ep =>
+                             cfg.ReceiveEndpoint(QueueName, ep =>
                              {
                                  ep.Consumer<QueueThisConsumer>(sp);
                                  ep.Consumer<SendConsumer>(sp);
@@ -72,10 +72,10 @@
                          })))
                 ).Build();
 
-            bus = appContext.Resolve<IBusControl>();
-            bus.Start();
+            _bus = AppContext.Resolve<IBusControl>();
+            _bus.Start();
 
-            clientBus = Bus.Factory.CreateUsingRabbitMq(cfg =>
+            ClientBus = Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
                 cfg.Host(rabbitUri, h =>
                 {
@@ -95,7 +95,7 @@
                 });
             });
 
-            clientBus.Start();
+            ClientBus.Start();
         }
     }
 }

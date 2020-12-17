@@ -16,8 +16,8 @@
             var handlerCounter         = DoSomethingHandler.Counter;
             var anotherHandlerCounter  = AnotherDoSomethingHandler.Counter;
 
-            await appContext.Publish(new DoSomething()
-                .RouteTo(routeString));
+            await AppContext.Publish(new DoSomething()
+                .RouteTo(RouteString));
 
             await Task.Delay(TimeSpan.FromMilliseconds(500));
             Assert.IsTrue(DoSomethingHandler.Counter > handlerCounter);

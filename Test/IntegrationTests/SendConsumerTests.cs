@@ -16,8 +16,8 @@
             var handlerCounter         = DoSomethingHandler.Counter;
             var anotherHandlerCounter  = AnotherDoSomethingHandler.Counter;
 
-            await appContext.Send(new DoSomething()
-                .RouteTo(routeString));
+            await AppContext.Send(new DoSomething()
+                .RouteTo(RouteString));
 
             await Task.Delay(TimeSpan.FromMilliseconds(500));
             Assert.IsTrue(
@@ -29,7 +29,7 @@
         [TestMethod, ExpectedException(typeof(NotSupportedException))]
         public async Task WhenUriIsInvalid()
         {
-            await appContext.Send(new DoSomething()
+            await AppContext.Send(new DoSomething()
                 .RouteTo("mt"));
         }
 
@@ -39,8 +39,8 @@
             const string message = "I need something";
             var handlerCounter = GiveMeSomethingHandler.Counter;
 
-            var result = await appContext.Send(new GiveMeSomething { Message = message }
-                .RouteTo(routeString));
+            var result = await AppContext.Send(new GiveMeSomething { Message = message }
+                .RouteTo(RouteString));
 
             await Task.Delay(TimeSpan.FromMilliseconds(500));
             Assert.IsTrue(GiveMeSomethingHandler.Counter > handlerCounter);
@@ -52,11 +52,11 @@
         {
             try
             {
-                await appContext.Send(new ThrowExceptionRequest
+                await AppContext.Send(new ThrowExceptionRequest
                     {
                         Message = "I expect you to throw."
                     }
-                    .RouteTo(routeString));
+                    .RouteTo(RouteString));
             }
             catch (TestException)
             {

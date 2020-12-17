@@ -16,7 +16,7 @@
             var handlerCounter         = DoSomethingHandler.Counter;
             var anotherHandlerCounter  = AnotherDoSomethingHandler.Counter;
 
-            appContext.Send(new DoSomething());
+            AppContext.Send(new DoSomething());
             Assert.IsTrue(
                 DoSomethingHandler.Counter        > handlerCounter ||
                 AnotherDoSomethingHandler.Counter > anotherHandlerCounter
@@ -27,7 +27,7 @@
         public async Task MassTransitCanConsume_QueueThis()
         {
             var counter  = QueueThisConsumer.Counter;
-            var endpoint = await clientBus.GetSendEndpoint(queueUri);
+            var endpoint = await ClientBus.GetSendEndpoint(QueueUri);
             await endpoint.Send(new QueueThis());
 
             //Wonder what a better way might be to wait for the
@@ -42,7 +42,7 @@
             var handlerCounter        = DoSomethingHandler.Counter;
             var anotherHandlerCounter = AnotherDoSomethingHandler.Counter;
 
-            var endpoint = await clientBus.GetSendEndpoint(queueUri);
+            var endpoint = await ClientBus.GetSendEndpoint(QueueUri);
             await endpoint.Send(new Send(new DoSomething{ message = "go do something"}));
 
             //Wonder what a better way might be to wait for the
