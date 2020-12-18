@@ -6,10 +6,16 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Miruken.Api;
     using Miruken.Api.Route;
+    using Setup;
 
     [TestClass]
-    public class PublishConsumerTests : TestScenario
+    public class PublishConsumerTests : MassTransitScenario
     {
+        public PublishConsumerTests()
+            : base(new RabbitMqSetup())
+        {
+        }
+        
         [TestMethod]
         public async Task CanPublishAndRouteToMassTransit()
         {

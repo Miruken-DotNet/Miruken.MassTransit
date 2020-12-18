@@ -1,17 +1,21 @@
 ﻿namespace IntegrationTests
 {
     using System;
+    using System.Threading.Tasks;
     using Domain;
     using MassTransit;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Miruken.Callback;
     using Miruken.Context;
     using Miruken.MassTransit;
     using Miruken.MassTransit.Api;
     using Miruken.Register;
+    using Setup;
 
-    public abstract class TestScenario
+    public abstract class MassTransitScenario
     {
+        private readonly MassTransitSetup _massTransitSetup;
         private IBusControl   _bus;
 
         protected Context     AppContext;
@@ -21,24 +25,27 @@
 
         private const string QueueName = "miruken_masstransit_integration_tests";
 
-        [TestCleanup]
-        public virtual void TestCleanup()
+        protected MassTransitScenario(MassTransitSetup massTransitSetup)
         {
-            _bus.Stop();
-            ClientBus.Stop();
-            AppContext.End();
+            _massTransitSetup = massTransitSetup
+                ?? throw new ArgumentNullException(nameof(massTransitSetup));
         }
 
         [TestInitialize]
-        public virtual void TestInitialize()
+        public async Task TestInitialize()
         {
+            var services             = new ServiceCollection();
+            var configurationBuilder = new ConfigurationBuilder();
+
+            await _massTransitSetup.Setup(configurationBuilder, services);
+            
             var rabbitUri = new Uri("rabbitmq://localhost");
             QueueUri      = new Uri($"{rabbitUri}{QueueName}");
             RouteString   = $"mt:{QueueUri}";
 
-            AppContext = new ServiceCollection()
+            AppContext = services
                 .AddMiruken(configure => configure
-                    .PublicSources(s => s.FromAssemblyOf<TestScenario>())
+                    .PublicSources(s => s.FromAssemblyOf<MassTransitScenario>())
                     .WithMassTransit(mt =>
                          mt.AddBus(sp => Bus.Factory.CreateUsingRabbitMq(cfg =>
                          {
@@ -96,6 +103,31 @@
             });
 
             ClientBus.Start();
+        }
+        
+        [TestCleanup]
+        public async Task TestCleanup()
+        {
+            try
+            {
+                _bus.Stop();
+                ClientBus.Stop();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
+            try
+            {
+                await _massTransitSetup.DisposeAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            AppContext.End();
         }
     }
 }

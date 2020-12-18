@@ -6,10 +6,16 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Miruken.Api;
     using Miruken.MassTransit.Api;
+    using Setup;
 
     [TestClass]
-    public class TestScenarioTest : TestScenario
+    public class MassTransitScenarioTests : MassTransitScenario
     {
+        public MassTransitScenarioTests()
+            : base(new RabbitMqSetup())
+        {
+        }
+        
         [TestMethod]
         public void MirukenCanHandle_DoSomething()
         {
@@ -57,7 +63,7 @@
         [TestMethod, ExpectedException(typeof(UriFormatException))]
         public void ValidUris()
         {
-            new Uri("mt");
+            var _ = new Uri("mt");
         }
     }
 }
