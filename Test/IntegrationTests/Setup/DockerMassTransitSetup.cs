@@ -116,8 +116,8 @@ namespace IntegrationTests.Setup
             }, CancellationToken.None);
 
             // Check if container exists
-            var pgImage = images.FirstOrDefault();
-            if (pgImage == null)
+            var hasImage = images.Any(image => image.RepoTags?.Contains(_imageName) == true);
+            if (!hasImage)
             {
                 Debug.WriteLine($"Pulling docker image {_imageName}");
                 await _docker.Images.CreateImageAsync(new ImagesCreateParameters
