@@ -60,12 +60,12 @@ namespace IntegrationTests.Setup
             parameters.HostConfig = new HostConfig
             {
                 PortBindings = new Dictionary<string, IList<PortBinding>>
-                {
-                    {$"{_internalPort}", new List<PortBinding>
                     {
-                        new PortBinding {HostPort = $"{externalPort}"}
-                    }}
-                }
+                        {$"{_internalPort}", new List<PortBinding>
+                        {
+                            new PortBinding {HostPort = $"{externalPort}"}
+                        }}
+                    }
             };
             parameters.Image = _imageName;
             
@@ -110,21 +110,24 @@ namespace IntegrationTests.Setup
         private async Task PullImage()
         {
             // look for image
-            var images = await _docker.Images.ListImagesAsync(new ImagesListParameters
-            {
-                MatchName = _imageName
-            }, CancellationToken.None);
+            var images = await _docker.Images.ListImagesAsync(
+                new ImagesListParameters
+                {
+                    MatchName = _imageName
+                }, CancellationToken.None);
 
             // Check if container exists
+            // MatchName does not seem to be working
             var hasImage = images.Any(image => image.RepoTags?.Contains(_imageName) == true);
             if (!hasImage)
             {
                 Debug.WriteLine($"Pulling docker image {_imageName}");
-                await _docker.Images.CreateImageAsync(new ImagesCreateParameters
-                {
-                    FromImage = _image,
-                    Tag       = _tag
-                }, null, new Progress<JSONMessage>());
+                await _docker.Images.CreateImageAsync(
+                    new ImagesCreateParameters
+                    {
+                        FromImage = _image,
+                        Tag       = _tag
+                    }, null, new Progress<JSONMessage>());
             }
         }
 

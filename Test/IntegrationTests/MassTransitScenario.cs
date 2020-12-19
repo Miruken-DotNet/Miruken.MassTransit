@@ -2,14 +2,12 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Domain;
     using MassTransit;
     using Microsoft.Extensions.Configuration;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Miruken.Callback;
     using Miruken.Context;
     using Miruken.MassTransit;
-    using Miruken.MassTransit.Api;
     using Miruken.Register;
     using Setup;
 
@@ -39,69 +37,19 @@
 
             await _massTransitSetup.Setup(configurationBuilder, services);
             
-            var rabbitUri = new Uri("rabbitmq://localhost");
-            QueueUri      = new Uri($"{rabbitUri}{QueueName}");
-            RouteString   = $"mt:{QueueUri}";
+            QueueUri    = _massTransitSetup.CreateQueueUri(QueueName);
+            RouteString = $"mt:{QueueUri}";
 
             AppContext = services
                 .AddMiruken(configure => configure
                     .PublicSources(s => s.FromAssemblyOf<MassTransitScenario>())
-                    .WithMassTransit(mt =>
-                         mt.AddBus(sp => Bus.Factory.CreateUsingRabbitMq(cfg =>
-                         {
-                             cfg.Host(rabbitUri, h =>
-                             {
-                                 h.Username("guest");
-                                 h.Password("guest");
-                             });
-
-                             cfg.UseInMemoryOutbox();
-
-                             cfg.ReceiveEndpoint(QueueName, ep =>
-                             {
-                                 ep.Consumer<QueueThisConsumer>(sp);
-                                 ep.Consumer<SendConsumer>(sp);
-                                 ep.Consumer<PublishConsumer>(sp);
-                                 ep.Consumer<RequestConsumer>(sp);
-                             });
-
-                             cfg.ConfigureJsonSerializer(x =>
-                             {
-                                 x.Converters.Insert(0, new MirukenJsonConverter());
-                                 return x;
-                             });
-
-                             cfg.ConfigureJsonDeserializer(x =>
-                             {
-                                 x.Converters.Insert(0, new MirukenJsonConverter());
-                                 return x;
-                             });
-                         })))
+                    .WithMassTransit(_massTransitSetup.Configure(QueueName))
                 ).Build();
 
             _bus = AppContext.Resolve<IBusControl>();
             _bus.Start();
 
-            ClientBus = Bus.Factory.CreateUsingRabbitMq(cfg =>
-            {
-                cfg.Host(rabbitUri, h =>
-                {
-                    h.Username("guest");
-                    h.Password("guest");
-                });
-                cfg.ConfigureJsonSerializer(x =>
-                {
-                    x.Converters.Insert(0, new MirukenJsonConverter());
-                    return x;
-                });
-
-                cfg.ConfigureJsonDeserializer(x =>
-                {
-                    x.Converters.Insert(0, new MirukenJsonConverter());
-                    return x;
-                });
-            });
-
+            ClientBus = _massTransitSetup.CreateClientBus();
             ClientBus.Start();
         }
         
