@@ -4,9 +4,12 @@ using Newtonsoft.Json.Serialization;
 
 namespace Miruken.MassTransit.Api
 {
-    public class MirukenJsonConverter: JsonConverter
+    public class MirukenJsonConverter : JsonConverter
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(
+            JsonWriter     writer, 
+            object         value, 
+            JsonSerializer serializer)
         {
             new JsonSerializer
             {
@@ -18,7 +21,11 @@ namespace Miruken.MassTransit.Api
             .Serialize(writer, value);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(
+            JsonReader     reader,
+            Type           objectType,
+            object         existingValue,
+            JsonSerializer serializer)
         {
             return new JsonSerializer
             {

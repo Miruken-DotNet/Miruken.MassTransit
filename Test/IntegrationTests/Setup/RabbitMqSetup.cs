@@ -7,16 +7,18 @@ namespace IntegrationTests.Setup
     using Domain;
     using MassTransit;
     using MassTransit.ExtensionsDependencyInjectionIntegration;
-    using MassTransit.Registration;
     using Microsoft.Extensions.Configuration;
     using Miruken.MassTransit;
     using Miruken.MassTransit.Api;
+    using Newtonsoft.Json;
     using RabbitMQ.Client;
     
     public class RabbitMqSetup : DockerMassTransitSetup
     {
         private const int Port = 5672;
-       
+
+        private static readonly JsonConverter Json = new MirukenJsonConverter();
+        
         public RabbitMqSetup() 
             : base("rabbitmq", "3-management", Port)
         {
@@ -51,13 +53,13 @@ namespace IntegrationTests.Setup
 
                 cfg.ConfigureJsonSerializer(x =>
                 {
-                    x.Converters.Insert(0, new MirukenJsonConverter());
+                    x.Converters.Insert(0, Json);
                     return x;
                 });
 
                 cfg.ConfigureJsonDeserializer(x =>
                 {
-                    x.Converters.Insert(0, new MirukenJsonConverter());
+                    x.Converters.Insert(0, Json);
                     return x;
                 });
             }));
@@ -71,15 +73,16 @@ namespace IntegrationTests.Setup
                     h.Username("guest");
                     h.Password("guest");
                 });
+                
                 cfg.ConfigureJsonSerializer(x =>
                 {
-                    x.Converters.Insert(0, new MirukenJsonConverter());
+                    x.Converters.Insert(0, Json);
                     return x;
                 });
 
                 cfg.ConfigureJsonDeserializer(x =>
                 {
-                    x.Converters.Insert(0, new MirukenJsonConverter());
+                    x.Converters.Insert(0, Json);
                     return x;
                 });
             });
@@ -88,8 +91,8 @@ namespace IntegrationTests.Setup
         protected override Task<bool> TestReady(int externalPort)
         {
             var factory = new ConnectionFactory {
-                HostName =                 "localhost",
-                Port     =                 externalPort,
+                HostName = "localhost",
+                Port     =  externalPort,
                 RequestedConnectionTimeout = TimeSpan.FromSeconds(1)
             };
 
@@ -98,7 +101,7 @@ namespace IntegrationTests.Setup
                 using var connection = factory.CreateConnection();
                 return Task.FromResult(connection.IsOpen);
             }
-            catch (Exception)
+            catch
             {
                 return Task.FromResult(false);
             }

@@ -32,9 +32,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit" Version="7.0.7" />
+    <PackageReference Include="MassTransit" Version="7.1.2" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.0.7" />
-    <PackageReference Include="Miruken" Version="4.1.6-Alpha.10" />
+    <PackageReference Include="Miruken" Version="4.1.6-Alpha.21" />
   </ItemGroup>
 
   <ItemGroup Condition="$(DefineConstants.Contains('NETSTANDARD2_0'))">

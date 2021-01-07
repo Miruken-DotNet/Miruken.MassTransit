@@ -63,14 +63,13 @@
                         Message = "I expect you to throw."
                     }
                     .RouteTo(RouteString));
+                
+                throw new Exception("Should never get here if test passes");
             }
             catch (TestException)
             {
                 //Expected TestException was thrown
-                return;
             }
-
-            throw new Exception("Should never get here if test passes");
         }
     }
 }

@@ -55,15 +55,20 @@ namespace IntegrationTests.Setup
             parameters.Name = $"{ContainerPrefix}-{Guid.NewGuid()}";
             parameters.ExposedPorts = new Dictionary<string, EmptyStruct>
             {
-                [$"{_internalPort}"] = default
+                [$"{_internalPort}/tcp"] = default,
+                ["15672/tcp"] = default
             };
             parameters.HostConfig = new HostConfig
             {
                 PortBindings = new Dictionary<string, IList<PortBinding>>
                     {
-                        {$"{_internalPort}", new List<PortBinding>
+                        {$"{_internalPort}/tcp", new List<PortBinding>
                         {
                             new PortBinding {HostPort = $"{externalPort}"}
+                        }},
+                        {"15672/tcp", new List<PortBinding>
+                        {
+                            new PortBinding {HostPort = "15672"}
                         }}
                     }
             };
@@ -91,6 +96,8 @@ namespace IntegrationTests.Setup
                 ready = await TestReady(externalPort);
             }
 
+            _containerId = container.ID;
+            
             if (ready)
             {
                 Debug.WriteLine($"Docker container started: {container.ID}");
@@ -100,8 +107,6 @@ namespace IntegrationTests.Setup
                 Debug.WriteLine("Docker container timeout waiting for service");
                 throw new TimeoutException();
             }
-            
-            _containerId = container.ID;            
         }
 
         protected abstract CreateContainerParameters ConfigureContainer(
@@ -159,11 +164,22 @@ namespace IntegrationTests.Setup
         {
             if (_containerId != null)
             {
-                await _docker.Containers.KillContainerAsync(
-                    _containerId, new ContainerKillParameters());
+                try
+                {
+                    await _docker.Containers.KillContainerAsync(
+                        _containerId, new ContainerKillParameters());
+                }
+                catch
+                {
+                    // ignore
+                }
 
                 await _docker.Containers.RemoveContainerAsync(
-                    _containerId, new ContainerRemoveParameters());
+                    _containerId, new ContainerRemoveParameters
+                    {
+                        RemoveVolumes = true,
+                        Force         = true
+                    });
             }
             _docker?.Dispose();
         }

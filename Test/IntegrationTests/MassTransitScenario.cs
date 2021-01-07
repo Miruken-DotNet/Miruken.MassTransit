@@ -58,8 +58,8 @@
         {
             try
             {
-                _bus.Stop();
-                ClientBus.Stop();
+                _bus?.Stop();
+                ClientBus?.Stop();
             }
             catch (Exception e)
             {
@@ -75,7 +75,7 @@
                 Console.WriteLine(e);
             }
 
-            AppContext.End();
+            AppContext?.End();
         }
     }
 }
