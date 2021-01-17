@@ -55,8 +55,7 @@ namespace IntegrationTests.Setup
             parameters.Name = $"{ContainerPrefix}-{Guid.NewGuid()}";
             parameters.ExposedPorts = new Dictionary<string, EmptyStruct>
             {
-                [$"{_internalPort}/tcp"] = default,
-                ["15672/tcp"] = default
+                [$"{_internalPort}/tcp"] = default
             };
             parameters.HostConfig = new HostConfig
             {
@@ -65,10 +64,6 @@ namespace IntegrationTests.Setup
                         {$"{_internalPort}/tcp", new List<PortBinding>
                         {
                             new PortBinding {HostPort = $"{externalPort}"}
-                        }},
-                        {"15672/tcp", new List<PortBinding>
-                        {
-                            new PortBinding {HostPort = "15672"}
                         }}
                     }
             };

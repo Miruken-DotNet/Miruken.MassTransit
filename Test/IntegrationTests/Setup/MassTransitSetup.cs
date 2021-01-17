@@ -4,7 +4,6 @@ namespace IntegrationTests.Setup
     using System.Threading.Tasks;
     using MassTransit;
     using MassTransit.ExtensionsDependencyInjectionIntegration;
-    using MassTransit.Registration;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 

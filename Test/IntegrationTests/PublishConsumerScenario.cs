@@ -7,12 +7,11 @@
     using Miruken.Api;
     using Miruken.Api.Route;
     using Setup;
-
-    [TestClass]
-    public class PublishConsumerTests : MassTransitScenario
+    
+    public abstract class PublishConsumerScenario : MassTransitScenario
     {
-        public PublishConsumerTests()
-            : base(new RabbitMqSetup())
+        protected PublishConsumerScenario(MassTransitSetup setup)
+            : base(setup)
         {
         }
         

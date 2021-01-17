@@ -8,19 +8,18 @@
     using Miruken.MassTransit.Api;
     using Setup;
 
-    [TestClass]
-    public class MassTransitScenarioTests : MassTransitScenario
+    public abstract class MassTransitSetupScenario : MassTransitScenario
     {
-        public MassTransitScenarioTests()
-            : base(new RabbitMqSetup())
+        protected MassTransitSetupScenario(MassTransitSetup setup)
+            : base(setup)
         {
         }
         
         [TestMethod]
         public void MirukenCanHandle_DoSomething()
         {
-            var handlerCounter         = DoSomethingHandler.Counter;
-            var anotherHandlerCounter  = AnotherDoSomethingHandler.Counter;
+            var handlerCounter        = DoSomethingHandler.Counter;
+            var anotherHandlerCounter = AnotherDoSomethingHandler.Counter;
 
             AppContext.Send(new DoSomething());
             Assert.IsTrue(

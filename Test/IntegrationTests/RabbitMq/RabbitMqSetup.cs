@@ -1,5 +1,5 @@
 // ReSharper disable RedundantAssignment
-namespace IntegrationTests.Setup
+namespace IntegrationTests.RabbitMq
 {
     using System;
     using System.Threading.Tasks;
@@ -12,7 +12,8 @@ namespace IntegrationTests.Setup
     using Miruken.MassTransit.Api;
     using Newtonsoft.Json;
     using RabbitMQ.Client;
-    
+    using Setup;
+
     public class RabbitMqSetup : DockerMassTransitSetup
     {
         private const int Port = 5672;
