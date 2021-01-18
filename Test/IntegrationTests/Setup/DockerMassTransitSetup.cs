@@ -34,6 +34,8 @@ namespace IntegrationTests.Setup
         
         protected virtual TimeSpan TimeOut => TimeSpan.FromSeconds(30);
         
+        protected IList<string> Environment { get; set; }
+        
         protected abstract Task<bool> TestReady(int externalPort);
         
         public override async ValueTask Setup(
@@ -52,22 +54,16 @@ namespace IntegrationTests.Setup
 
             // Create container from image
             var parameters = ConfigureContainer(configuration, ref externalPort);
-            parameters.Name = $"{ContainerPrefix}-{Guid.NewGuid()}";
-            parameters.ExposedPorts = new Dictionary<string, EmptyStruct>
-            {
-                [$"{_internalPort}/tcp"] = default
-            };
-            parameters.HostConfig = new HostConfig
-            {
-                PortBindings = new Dictionary<string, IList<PortBinding>>
-                    {
-                        {$"{_internalPort}/tcp", new List<PortBinding>
-                        {
-                            new PortBinding {HostPort = $"{externalPort}"}
-                        }}
-                    }
-            };
+            parameters.Name  = $"{ContainerPrefix}-{Guid.NewGuid()}";
             parameters.Image = _imageName;
+            parameters.ExposedPorts ??= new Dictionary<string, EmptyStruct>();
+            parameters.ExposedPorts[$"{_internalPort}/tcp"] = default;
+            parameters.HostConfig ??= new HostConfig();
+            parameters.HostConfig.PortBindings ??= new Dictionary<string, IList<PortBinding>>();
+            parameters.HostConfig.PortBindings[$"{_internalPort}/tcp"] = new List<PortBinding>
+            {
+                new PortBinding {HostPort = $"{externalPort}"}
+            };
             
             var container = await _docker.Containers.CreateContainerAsync(parameters);
 
@@ -176,6 +172,7 @@ namespace IntegrationTests.Setup
                         Force         = true
                     });
             }
+
             _docker?.Dispose();
         }
     }

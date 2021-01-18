@@ -1,6 +1,7 @@
-namespace IntegrationTests.RabbitMq
+namespace IntegrationTests.Aws
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using RabbitMq;
 
     [TestClass]
     public class SendConsumerTests : SendConsumerScenario

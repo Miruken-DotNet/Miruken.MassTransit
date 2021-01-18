@@ -15,11 +15,11 @@
 
         public MassTransitRouter(IBus bus)
         {
-            _bus = bus;
+            _bus = bus ?? throw new ArgumentNullException(nameof(bus));
         }
 
         [Handles]
-        public async Task<object> Route(Routed routed, Command command, IHandler composer)
+        public async Task<object> Route(Routed routed, Command command)
         {
             Uri endpointUri;
             try
@@ -49,7 +49,7 @@
             return null;
         }
 
-        public object EnsureSuccessfulResult(Response response)
+        private static object EnsureSuccessfulResult(Response response)
         {
             if (response.Exception != null)
                 throw response.Exception;

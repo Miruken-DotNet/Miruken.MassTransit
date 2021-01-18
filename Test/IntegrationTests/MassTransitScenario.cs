@@ -47,10 +47,10 @@
                 ).Build();
 
             _bus = AppContext.Resolve<IBusControl>();
-            _bus.Start();
+            await _bus.StartAsync();
 
             ClientBus = _massTransitSetup.CreateClientBus();
-            ClientBus.Start();
+            await ClientBus.StartAsync();
         }
         
         [TestCleanup]

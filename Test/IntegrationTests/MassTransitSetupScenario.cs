@@ -48,7 +48,7 @@
             var anotherHandlerCounter = AnotherDoSomethingHandler.Counter;
 
             var endpoint = await ClientBus.GetSendEndpoint(QueueUri);
-            await endpoint.Send(new Send(new DoSomething{ message = "go do something"}));
+            await endpoint.Send(new Send(new DoSomething{ Message = "go do something"}));
 
             //Wonder what a better way might be to wait for the
             //message to be processed

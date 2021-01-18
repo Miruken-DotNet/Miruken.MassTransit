@@ -30,7 +30,7 @@ namespace IntegrationTests.RabbitMq
         public override Uri CreateQueueUri(string queueName)
         {
             var rabbitUri = new Uri("rabbitmq://localhost");
-            return new Uri($"{rabbitUri}/{queueName}");
+            return new Uri(rabbitUri, queueName);
         }
 
         public override Action<IServiceCollectionBusConfigurator> Configure(string queueName) =>
