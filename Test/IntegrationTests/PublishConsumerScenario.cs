@@ -18,10 +18,11 @@
         [TestMethod]
         public async Task CanPublishAndRouteToMassTransit()
         {
-            var handlerCounter         = DoSomethingHandler.Counter;
-            var anotherHandlerCounter  = AnotherDoSomethingHandler.Counter;
+            var handlerCounter        = DoSomethingHandler.Counter;
+            var anotherHandlerCounter = AnotherDoSomethingHandler.Counter;
 
-            await AppContext.Publish(new DoSomething { Message = "Everyone gets this" }
+            await AppContext.Publish(
+                new DoSomething { Message = "Everyone gets this" }
                 .RouteTo(RouteString));
 
             await Task.Delay(TimeSpan.FromMilliseconds(500));

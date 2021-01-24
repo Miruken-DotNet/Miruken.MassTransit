@@ -40,7 +40,16 @@
 
             if (command.Many)
             {
-                await _bus.Publish(new Publish(routed.Message));
+                var publish = new Publish(routed.Message);
+                if (endpointUri.Scheme == "topic")
+                {
+                    var topicEndpoint = await _bus.GetSendEndpoint(endpointUri);
+                    await topicEndpoint.Send(publish);
+                }
+                else
+                {
+                    await _bus.Publish(publish);
+                }
                 return null;
             }
 

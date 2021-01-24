@@ -34,8 +34,8 @@
         [TestMethod, ExpectedException(typeof(NotSupportedException))]
         public async Task WhenUriIsInvalid()
         {
-            await AppContext.Send(new DoSomething()
-                .RouteTo("mt"));
+            await AppContext.Send(
+                new DoSomething().RouteTo("mt"));
         }
 
         [TestMethod]
@@ -44,7 +44,8 @@
             const string message = "I need something";
             var handlerCounter = GiveMeSomethingHandler.Counter;
 
-            var result = await AppContext.Send(new GiveMeSomething { Message = message }
+            var result = await AppContext.Send(
+                new GiveMeSomething { Message = message }
                 .RouteTo(RouteString));
 
             await Task.Delay(TimeSpan.FromMilliseconds(500));
@@ -57,7 +58,8 @@
         {
             try
             {
-                await AppContext.Send(new ThrowExceptionRequest
+                await AppContext.Send(
+                    new ThrowExceptionRequest
                     {
                         Message = "I expect you to throw."
                     }
