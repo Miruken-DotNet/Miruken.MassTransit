@@ -1,9 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
-namespace Miruken.MassTransit.Api
+﻿namespace Miruken.MassTransit.Api
 {
+    using System;
+    using Newtonsoft.Json;
+
     public class MirukenJsonConverter : JsonConverter
     {
         public override void WriteJson(
@@ -15,8 +14,7 @@ namespace Miruken.MassTransit.Api
             {
                 NullValueHandling              = NullValueHandling.Ignore,
                 TypeNameHandling               = TypeNameHandling.Auto,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                ContractResolver               = new CamelCasePropertyNamesContractResolver()
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
             }
             .Serialize(writer, value);
         }
@@ -31,8 +29,7 @@ namespace Miruken.MassTransit.Api
             {
                 NullValueHandling              = NullValueHandling.Ignore,
                 TypeNameHandling               = TypeNameHandling.Auto,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                ContractResolver               = new CamelCasePropertyNamesContractResolver()
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
             }.Deserialize(reader, objectType);
         }
 

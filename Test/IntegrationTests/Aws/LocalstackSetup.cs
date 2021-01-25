@@ -15,15 +15,13 @@ namespace IntegrationTests.Aws
     using Microsoft.Extensions.Configuration;
     using Miruken.MassTransit;
     using Miruken.MassTransit.Api;
-    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Setup;
 
     public class LocalstackSetup : DockerMassTransitSetup
     {
         private const int Port = 4566;
-
-        private static readonly JsonConverter Json = new MirukenJsonConverter();
+        
         public LocalstackSetup()
             : base("localstack/localstack", "latest", Port)
         {
@@ -36,14 +34,16 @@ namespace IntegrationTests.Aws
         }
 
         public override Action<IServiceCollectionBusConfigurator> Configure(string queueName) =>
-            mt => mt.AddBus(sp => Bus.Factory.CreateUsingAmazonSqs(cfg =>
+            mt => mt.UsingAmazonSqs((context, cfg) =>
             {
-                cfg.Host(new Uri($"amazonsqs://localhost:{Port}"), h =>
+                var serverUrl = $"http://localhost:{Port}";
+                
+                cfg.Host("us-west-1", h =>
                 {
                     h.AccessKey("foo");
                     h.SecretKey("bar");
-                    h.Config(new AmazonSQSConfig {ServiceURL = $"http://localhost:{Port}"});
-                    h.Config(new AmazonSimpleNotificationServiceConfig {ServiceURL = $"http://localhost:{Port}"});
+                    h.Config(new AmazonSQSConfig { ServiceURL = serverUrl });
+                    h.Config(new AmazonSimpleNotificationServiceConfig { ServiceURL = serverUrl });
                 });
                 
                 cfg.UseInMemoryOutbox();
@@ -60,30 +60,20 @@ namespace IntegrationTests.Aws
                         
                     });
 
-                    ep.Consumer<QueueThisConsumer>(sp);
-                    ep.Consumer<SendConsumer>(sp);
-                    ep.Consumer<PublishConsumer>(sp);
-                    ep.Consumer<RequestConsumer>(sp);
+                    ep.Consumer<QueueThisConsumer>(context);
+                    ep.Consumer<SendConsumer>(context);
+                    ep.Consumer<PublishConsumer>(context);
+                    ep.Consumer<RequestConsumer>(context);
                 });
 
-                cfg.ConfigureJsonSerializer(x =>
-                {
-                    x.Converters.Insert(0, Json);
-                    return x;
-                });
-
-                cfg.ConfigureJsonDeserializer(x =>
-                {
-                    x.Converters.Insert(0, Json);
-                    return x;
-                });
-            }));
+                cfg.UseMirukenJsonSerialization();
+            });
         
         public override IBusControl CreateClientBus()
         {
             return Bus.Factory.CreateUsingAmazonSqs(cfg =>
             {
-                cfg.Host(new Uri($"amazonsqs://localhost:{Port}"), h =>
+                cfg.Host("us-west-1", h =>
                 {
                     h.AccessKey("foo");
                     h.SecretKey("bar");
@@ -91,17 +81,7 @@ namespace IntegrationTests.Aws
                     h.Config(new AmazonSimpleNotificationServiceConfig {ServiceURL = $"http://localhost:{Port}"});
                 });
                 
-                cfg.ConfigureJsonSerializer(x =>
-                {
-                    x.Converters.Insert(0, Json);
-                    return x;
-                });
-
-                cfg.ConfigureJsonDeserializer(x =>
-                {
-                    x.Converters.Insert(0, Json);
-                    return x;
-                });
+                cfg.UseMirukenJsonSerialization();
             });
         }
 

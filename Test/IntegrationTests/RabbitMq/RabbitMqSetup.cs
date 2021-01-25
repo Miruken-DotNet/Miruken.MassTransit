@@ -10,15 +10,12 @@ namespace IntegrationTests.RabbitMq
     using Microsoft.Extensions.Configuration;
     using Miruken.MassTransit;
     using Miruken.MassTransit.Api;
-    using Newtonsoft.Json;
     using RabbitMQ.Client;
     using Setup;
 
     public class RabbitMqSetup : DockerMassTransitSetup
     {
         private const int Port = 5672;
-
-        private static readonly JsonConverter Json = new MirukenJsonConverter();
         
         public RabbitMqSetup() 
             : base("rabbitmq", "3-management", Port)
@@ -34,7 +31,7 @@ namespace IntegrationTests.RabbitMq
         }
 
         public override Action<IServiceCollectionBusConfigurator> Configure(string queueName) =>
-            mt => mt.AddBus(sp => Bus.Factory.CreateUsingRabbitMq(cfg =>
+            mt => mt.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(new Uri("rabbitmq://localhost"), h =>
                 {
@@ -46,24 +43,14 @@ namespace IntegrationTests.RabbitMq
 
                 cfg.ReceiveEndpoint(queueName, ep =>
                 {
-                    ep.Consumer<QueueThisConsumer>(sp);
-                    ep.Consumer<SendConsumer>(sp);
-                    ep.Consumer<PublishConsumer>(sp);
-                    ep.Consumer<RequestConsumer>(sp);
+                    ep.Consumer<QueueThisConsumer>(context);
+                    ep.Consumer<SendConsumer>(context);
+                    ep.Consumer<PublishConsumer>(context);
+                    ep.Consumer<RequestConsumer>(context);
                 });
 
-                cfg.ConfigureJsonSerializer(x =>
-                {
-                    x.Converters.Insert(0, Json);
-                    return x;
-                });
-
-                cfg.ConfigureJsonDeserializer(x =>
-                {
-                    x.Converters.Insert(0, Json);
-                    return x;
-                });
-            }));
+                cfg.UseMirukenJsonSerialization();
+            });
 
         public override IBusControl CreateClientBus()
         {
@@ -75,17 +62,7 @@ namespace IntegrationTests.RabbitMq
                     h.Password("guest");
                 });
                 
-                cfg.ConfigureJsonSerializer(x =>
-                {
-                    x.Converters.Insert(0, Json);
-                    return x;
-                });
-
-                cfg.ConfigureJsonDeserializer(x =>
-                {
-                    x.Converters.Insert(0, Json);
-                    return x;
-                });
+                cfg.UseMirukenJsonSerialization();
             });
         }
 
