@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
     using MassTransit;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Miruken.Callback;
     using Miruken.Context;
