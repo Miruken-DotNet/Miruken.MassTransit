@@ -37,11 +37,13 @@
             var configurationBuilder = new ConfigurationBuilder();
 
             await _massTransitSetup.Setup(configurationBuilder, services);
+            var configuration = configurationBuilder.Build();
             
             QueueUri    = _massTransitSetup.CreateQueueUri(QueueName);
             RouteString = $"mt:{QueueUri}";
 
             AppContext = services
+                .AddSingleton<IConfiguration>(configuration)
                 .AddMiruken(configure => configure
                     .PublicSources(s => s.FromAssemblyOf<MassTransitScenario>())
                     .WithMassTransit(_massTransitSetup.Configure(QueueName))
