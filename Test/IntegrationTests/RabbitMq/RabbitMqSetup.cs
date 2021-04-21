@@ -44,12 +44,10 @@ namespace IntegrationTests.RabbitMq
                 cfg.ReceiveEndpoint(queueName, ep =>
                 {
                     ep.Consumer<QueueThisConsumer>(context);
-                    ep.Consumer<SendConsumer>(context);
-                    ep.Consumer<PublishConsumer>(context);
-                    ep.Consumer<RequestConsumer>(context);
+                    ep.AddMirukenConsumers(context);
                 });
 
-                cfg.UseMirukenJsonSerialization();
+                cfg.UsePolymorphicJsonSerialization();
             });
 
         public override IBusControl CreateClientBus()
@@ -62,7 +60,7 @@ namespace IntegrationTests.RabbitMq
                     h.Password("guest");
                 });
                 
-                cfg.UseMirukenJsonSerialization();
+                cfg.UsePolymorphicJsonSerialization();
             });
         }
 

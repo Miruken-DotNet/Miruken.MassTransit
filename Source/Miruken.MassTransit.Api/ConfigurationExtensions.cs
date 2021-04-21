@@ -6,23 +6,18 @@ namespace Miruken.MassTransit.Api
 
     public static class ConfigurationExtensions
     {
-        private static readonly JsonConverter Json = new MirukenJsonConverter();
-        
-        public static void UseMirukenJsonSerialization(this IBusFactoryConfigurator configurator)
+        public static void UsePolymorphicJsonSerialization(this IBusFactoryConfigurator configurator)
         {
-            configurator.ConfigureJsonSerializer(x =>
+            var polymorphicJson = new PolymorphicJsonConverter();
+            JsonSerializerSettings UsePolymorphicJson(JsonSerializerSettings settings)
             {
-                if (!x.Converters.OfType<MirukenJsonConverter>().Any())
-                    x.Converters.Insert(0, Json);
-                return x;
-            });
-
-            configurator.ConfigureJsonDeserializer(x =>
-            {
-                if (!x.Converters.OfType<MirukenJsonConverter>().Any())
-                    x.Converters.Insert(0, Json);
-                return x;
-            });
+                if (!settings.Converters.OfType<PolymorphicJsonConverter>().Any())
+                    settings.Converters.Insert(0, polymorphicJson);
+                return settings;
+            }
+            
+            configurator.ConfigureJsonSerializer(UsePolymorphicJson);
+            configurator.ConfigureJsonDeserializer(UsePolymorphicJson);
         }
     }
 }

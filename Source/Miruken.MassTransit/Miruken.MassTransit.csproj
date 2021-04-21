@@ -27,9 +27,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="MassTransit" Version="7.1.5" />
-    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.1.5" />
-    <PackageReference Include="Miruken" Version="5.0.0" />
+    <PackageReference Include="MassTransit" Version="7.1.8" />
+    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.1.8" />
+    <PackageReference Include="Miruken" Version="5.0.1-Alpha.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
   </ItemGroup>
   

@@ -26,7 +26,8 @@
             {
                 var uri     = new Uri(routed.Route);
                 endpointUri = new Uri(uri.PathAndQuery);
-            } catch (UriFormatException)
+            } 
+            catch (UriFormatException)
             {
                 return null;
             }
@@ -34,8 +35,14 @@
             if (routed.Message.GetType().IsClassOf(typeof(IRequest<>)))
             {
                 var client = _bus.CreateRequestClient<Request>(endpointUri, TimeSpan.FromSeconds(30));
-                var result = await client.GetResponse<Response>(new Request(routed.Message));
-                return EnsureSuccessfulResult(result.Message);
+                var result = await client.GetResponse<Response, Failure>(new Request(routed.Message));
+                if (result.Is(out Response<Response> response))
+                    return response.Message.Payload;
+
+                if (result.Is(out Response<Failure> failure))
+                    throw failure.Message.Exception;
+
+                throw new InvalidOperationException("Unable to determine the response.");
             }
 
             if (command.Many)
@@ -56,13 +63,6 @@
             var endpoint = await _bus.GetSendEndpoint(endpointUri);
             await endpoint.Send(new Send(routed.Message));
             return null;
-        }
-
-        private static object EnsureSuccessfulResult(Response response)
-        {
-            if (response.Exception != null)
-                throw response.Exception;
-            return response.Payload;
         }
     }
 }

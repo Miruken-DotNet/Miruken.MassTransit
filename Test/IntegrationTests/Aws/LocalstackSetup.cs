@@ -55,18 +55,13 @@ namespace IntegrationTests.Aws
                     ep.PurgeOnStartup           = true;
                     ep.ConfigureConsumeTopology = false;
                     
-                    ep.Subscribe("miruken-topic", s =>
-                    {
-                        
-                    });
+                    ep.Subscribe("miruken-topic");
 
                     ep.Consumer<QueueThisConsumer>(context);
-                    ep.Consumer<SendConsumer>(context);
-                    ep.Consumer<PublishConsumer>(context);
-                    ep.Consumer<RequestConsumer>(context);
+                    ep.AddMirukenConsumers(context);
                 });
 
-                cfg.UseMirukenJsonSerialization();
+                cfg.UsePolymorphicJsonSerialization();
             });
         
         public override IBusControl CreateClientBus()
@@ -81,7 +76,7 @@ namespace IntegrationTests.Aws
                     h.Config(new AmazonSimpleNotificationServiceConfig {ServiceURL = $"http://localhost:{Port}"});
                 });
                 
-                cfg.UseMirukenJsonSerialization();
+                cfg.UsePolymorphicJsonSerialization();
             });
         }
 

@@ -16,7 +16,7 @@
             }
             catch (Exception e)
             {
-                await context.RespondAsync(new Api.Response(e));
+                await context.RespondAsync(new Api.Failure(e));
             }
         }
     }
