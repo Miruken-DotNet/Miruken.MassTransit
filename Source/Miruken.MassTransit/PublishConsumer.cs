@@ -1,15 +1,14 @@
-﻿namespace Miruken.MassTransit
-{
-    using System.Threading.Tasks;
-    using Api;
-    using global::MassTransit;
-    using Miruken.Api;
+﻿namespace Miruken.MassTransit;
 
-    public class PublishConsumer : ContextualConsumer<Publish>
+using System.Threading.Tasks;
+using Api;
+using global::MassTransit;
+using Miruken.Api;
+
+public class PublishConsumer : ContextualConsumer<Publish>
+{
+    public override async Task Consume(ConsumeContext<Publish> context)
     {
-        public override async Task Consume(ConsumeContext<Publish> context)
-        {
-            await Context.Publish(context.Message.Payload);
-        }
+        await Context.Publish(context.Message.Payload);
     }
 }

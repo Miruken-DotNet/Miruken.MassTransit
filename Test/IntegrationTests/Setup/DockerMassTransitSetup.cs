@@ -1,179 +1,178 @@
-namespace IntegrationTests.Setup
+namespace IntegrationTests.Setup;
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using Docker.DotNet;
+using Docker.DotNet.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+public abstract class DockerMassTransitSetup : MassTransitSetup
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Net.NetworkInformation;
-    using System.Runtime.InteropServices;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Docker.DotNet;
-    using Docker.DotNet.Models;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
+    private readonly string _image;
+    private readonly string _tag;
+    private readonly string _imageName;
+    private readonly int _internalPort;
+    private IDockerClient _docker;
+    private string _containerId;
 
-    public abstract class DockerMassTransitSetup : MassTransitSetup
+    protected DockerMassTransitSetup(string image, string tag, int internalPort)
     {
-        private readonly string _image;
-        private readonly string _tag;
-        private readonly string _imageName;
-        private readonly int _internalPort;
-        private IDockerClient _docker;
-        private string _containerId;
+        _image        = image ?? throw new ArgumentNullException(nameof(image));
+        _tag          = tag;
+        _imageName    = string.IsNullOrEmpty(tag) ? image : $"{image}:{tag}";
+        _internalPort = internalPort;
+    }
+        
+    protected virtual string ContainerPrefix => "miruken-tests";
+        
+    protected virtual TimeSpan TimeOut => TimeSpan.FromSeconds(30);
+        
+    protected IList<string> Environment { get; set; }
+        
+    protected abstract Task<bool> TestReady(int externalPort);
+        
+    public override async ValueTask Setup(
+        ConfigurationBuilder configuration,
+        IServiceCollection   services)
+    {
+        var dockerEndpoint = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? new Uri("npipe://./pipe/docker_engine")
+            : new Uri("unix:///var/run/docker.sock");
 
-        protected DockerMassTransitSetup(string image, string tag, int internalPort)
-        {
-            _image        = image ?? throw new ArgumentNullException(nameof(image));
-            _tag          = tag;
-            _imageName    = string.IsNullOrEmpty(tag) ? image : $"{image}:{tag}";
-            _internalPort = internalPort;
-        }
-        
-        protected virtual string ContainerPrefix => "miruken-tests";
-        
-        protected virtual TimeSpan TimeOut => TimeSpan.FromSeconds(30);
-        
-        protected IList<string> Environment { get; set; }
-        
-        protected abstract Task<bool> TestReady(int externalPort);
-        
-        public override async ValueTask Setup(
-            ConfigurationBuilder configuration,
-            IServiceCollection   services)
-        {
-           var dockerEndpoint = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? new Uri("npipe://./pipe/docker_engine")
-                : new Uri("unix:///var/run/docker.sock");
+        _docker = new DockerClientConfiguration(dockerEndpoint).CreateClient();
 
-            _docker = new DockerClientConfiguration(dockerEndpoint).CreateClient();
-
-            await PullImage();
+        await PullImage();
                 
-            var externalPort = GetAvailableHostPort(10000, 12000);
+        var externalPort = GetAvailableHostPort(10000, 12000);
 
-            // Create container from image
-            var parameters = ConfigureContainer(configuration, ref externalPort);
-            parameters.Name  = $"{ContainerPrefix}-{Guid.NewGuid()}";
-            parameters.Image = _imageName;
-            parameters.ExposedPorts ??= new Dictionary<string, EmptyStruct>();
-            parameters.ExposedPorts[$"{_internalPort}/tcp"] = default;
-            parameters.HostConfig ??= new HostConfig();
-            parameters.HostConfig.PortBindings ??= new Dictionary<string, IList<PortBinding>>();
-            parameters.HostConfig.PortBindings[$"{_internalPort}/tcp"] = new List<PortBinding>
-            {
-                new PortBinding {HostPort = $"{externalPort}"}
-            };
+        // Create container from image
+        var parameters = ConfigureContainer(configuration, ref externalPort);
+        parameters.Name  = $"{ContainerPrefix}-{Guid.NewGuid()}";
+        parameters.Image = _imageName;
+        parameters.ExposedPorts ??= new Dictionary<string, EmptyStruct>();
+        parameters.ExposedPorts[$"{_internalPort}/tcp"] = default;
+        parameters.HostConfig ??= new HostConfig();
+        parameters.HostConfig.PortBindings ??= new Dictionary<string, IList<PortBinding>>();
+        parameters.HostConfig.PortBindings[$"{_internalPort}/tcp"] = new List<PortBinding>
+        {
+            new PortBinding {HostPort = $"{externalPort}"}
+        };
             
-            var container = await _docker.Containers.CreateContainerAsync(parameters);
+        var container = await _docker.Containers.CreateContainerAsync(parameters);
 
-            if (!await _docker.Containers.StartContainerAsync(
+        if (!await _docker.Containers.StartContainerAsync(
                 container.ID, new ContainerStartParameters
                 {
                     DetachKeys = $"d={_image}"
                 }))
-            {
-                throw new Exception($"Could not start container: {container.ID}");
-            }
+        {
+            throw new Exception($"Could not start container: {container.ID}");
+        }
 
-            Debug.WriteLine("Waiting service to start in the docker container...");
+        Debug.WriteLine("Waiting service to start in the docker container...");
                 
-            var ready      = false;
-            var expiryTime = DateTime.Now.Add(TimeOut);
+        var ready      = false;
+        var expiryTime = DateTime.Now.Add(TimeOut);
 
-            while (DateTime.Now < expiryTime && !ready)
-            {
-                await Task.Delay(1000);
-                ready = await TestReady(externalPort);
-            }
+        while (DateTime.Now < expiryTime && !ready)
+        {
+            await Task.Delay(1000);
+            ready = await TestReady(externalPort);
+        }
 
-            _containerId = container.ID;
+        _containerId = container.ID;
             
-            if (ready)
-            {
-                Debug.WriteLine($"Docker container started: {container.ID}");
-            }
-            else
-            {
-                Debug.WriteLine("Docker container timeout waiting for service");
-                throw new TimeoutException();
-            }
-        }
-
-        protected abstract CreateContainerParameters ConfigureContainer(
-            ConfigurationBuilder configuration, ref int externalPort);
-
-        private async Task PullImage()
+        if (ready)
         {
-            // look for image
-            var images = await _docker.Images.ListImagesAsync(
-                new ImagesListParameters
+            Debug.WriteLine($"Docker container started: {container.ID}");
+        }
+        else
+        {
+            Debug.WriteLine("Docker container timeout waiting for service");
+            throw new TimeoutException();
+        }
+    }
+
+    protected abstract CreateContainerParameters ConfigureContainer(
+        ConfigurationBuilder configuration, ref int externalPort);
+
+    private async Task PullImage()
+    {
+        // look for image
+        var images = await _docker.Images.ListImagesAsync(
+            new ImagesListParameters
+            {
+                MatchName = _imageName
+            }, CancellationToken.None);
+
+        // Check if container exists
+        // MatchName does not seem to be working
+        var hasImage = images.Any(image => image.RepoTags?.Contains(_imageName) == true);
+        if (!hasImage)
+        {
+            Debug.WriteLine($"Pulling docker image {_imageName}");
+            await _docker.Images.CreateImageAsync(
+                new ImagesCreateParameters
                 {
-                    MatchName = _imageName
-                }, CancellationToken.None);
-
-            // Check if container exists
-            // MatchName does not seem to be working
-            var hasImage = images.Any(image => image.RepoTags?.Contains(_imageName) == true);
-            if (!hasImage)
-            {
-                Debug.WriteLine($"Pulling docker image {_imageName}");
-                await _docker.Images.CreateImageAsync(
-                    new ImagesCreateParameters
-                    {
-                        FromImage = _image,
-                        Tag       = _tag
-                    }, null, new Progress<JSONMessage>());
-            }
+                    FromImage = _image,
+                    Tag       = _tag
+                }, null, new Progress<JSONMessage>());
         }
+    }
 
-        private static int GetAvailableHostPort(int startRange, int endRange)
+    private static int GetAvailableHostPort(int startRange, int endRange)
+    {
+        var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+        var tcpPorts           = ipGlobalProperties.GetActiveTcpListeners();
+        var udpPorts           = ipGlobalProperties.GetActiveUdpListeners();
+
+        var result = startRange;
+
+        while ((tcpPorts.Any(x => x.Port == result) ||
+                udpPorts.Any(x => x.Port == result)) &&
+               result <= endRange)
         {
-            var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            var tcpPorts           = ipGlobalProperties.GetActiveTcpListeners();
-            var udpPorts           = ipGlobalProperties.GetActiveUdpListeners();
-
-            var result = startRange;
-
-            while ((tcpPorts.Any(x => x.Port == result) ||
-                    udpPorts.Any(x => x.Port == result)) &&
-                   result <= endRange)
-            {
-                ++result;
-            }
-
-            if (result > endRange)
-            {
-                throw new InvalidOperationException(
-                    $"Unable to find an open port between {startRange} and {endRange}");
-            }
-
-            return result;
+            ++result;
         }
+
+        if (result > endRange)
+        {
+            throw new InvalidOperationException(
+                $"Unable to find an open port between {startRange} and {endRange}");
+        }
+
+        return result;
+    }
         
-        public override async ValueTask DisposeAsync()
+    public override async ValueTask DisposeAsync()
+    {
+        if (_containerId != null)
         {
-            if (_containerId != null)
+            try
             {
-                try
-                {
-                    await _docker.Containers.KillContainerAsync(
-                        _containerId, new ContainerKillParameters());
-                }
-                catch
-                {
-                    // ignore
-                }
-
-                await _docker.Containers.RemoveContainerAsync(
-                    _containerId, new ContainerRemoveParameters
-                    {
-                        RemoveVolumes = true,
-                        Force         = true
-                    });
+                await _docker.Containers.KillContainerAsync(
+                    _containerId, new ContainerKillParameters());
+            }
+            catch
+            {
+                // ignore
             }
 
-            _docker?.Dispose();
+            await _docker.Containers.RemoveContainerAsync(
+                _containerId, new ContainerRemoveParameters
+                {
+                    RemoveVolumes = true,
+                    Force         = true
+                });
         }
+
+        _docker?.Dispose();
     }
 }

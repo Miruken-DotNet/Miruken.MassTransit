@@ -1,4 +1,3 @@
-﻿namespace Miruken.MassTransit.Api
-{
-    public record Send(object Payload);
-}
+﻿namespace Miruken.MassTransit.Api;
+
+public record Send(object Payload);

@@ -1,7 +1,6 @@
-﻿namespace IntegrationTests.Domain
+﻿namespace IntegrationTests.Domain;
+
+public class DoSomething
 {
-    public class DoSomething
-    {
-        public string Message { get; set; }
-    }
+    public string Message { get; set; }
 }

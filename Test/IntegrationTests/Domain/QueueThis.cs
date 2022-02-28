@@ -1,6 +1,5 @@
-﻿namespace IntegrationTests.Domain
+﻿namespace IntegrationTests.Domain;
+
+public class QueueThis
 {
-    public class QueueThis
-    {
-    }
 }

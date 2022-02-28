@@ -1,6 +1,5 @@
-﻿namespace Miruken.MassTransit.Api
-{
-    using Miruken.Api;
+﻿namespace Miruken.MassTransit.Api;
 
-    public record Request(object Payload) : IRequest<Response>;
-}
+using Miruken.Api;
+
+public record Request(object Payload) : IRequest<Response>;

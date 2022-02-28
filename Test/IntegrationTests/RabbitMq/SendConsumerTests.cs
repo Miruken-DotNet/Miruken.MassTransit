@@ -1,12 +1,11 @@
-namespace IntegrationTests.RabbitMq
-{
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+namespace IntegrationTests.RabbitMq;
 
-    [TestClass]
-    public class SendConsumerTests : SendConsumerScenario
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class SendConsumerTests : SendConsumerScenario
+{
+    public SendConsumerTests() : base(new RabbitMqSetup())
     {
-        public SendConsumerTests() : base(new RabbitMqSetup())
-        {
-        }
     }
 }

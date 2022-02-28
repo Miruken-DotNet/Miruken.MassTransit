@@ -1,6 +1,5 @@
-﻿namespace Miruken.MassTransit.Api
-{
-    using System;
+﻿namespace Miruken.MassTransit.Api;
 
-    public record Failure(Exception Exception);
-}
+using System;
+
+public record Failure(Exception Exception);

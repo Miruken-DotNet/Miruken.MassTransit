@@ -1,18 +1,17 @@
 ﻿using System.Threading.Tasks;
 using MassTransit;
 
-namespace IntegrationTests.Domain
+namespace IntegrationTests.Domain;
+
+using Miruken.MassTransit;
+
+public class QueueThisConsumer : ContextualConsumer<QueueThis>
 {
-    using Miruken.MassTransit;
+    public static int Counter;
 
-    public class QueueThisConsumer : ContextualConsumer<QueueThis>
+    public override Task Consume(ConsumeContext<QueueThis> context)
     {
-        public static int Counter;
-
-        public override Task Consume(ConsumeContext<QueueThis> context)
-        {
-            Counter++;
-            return Task.CompletedTask;
-        }
+        Counter++;
+        return Task.CompletedTask;
     }
 }
